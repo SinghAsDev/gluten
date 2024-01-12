@@ -24,6 +24,13 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
+  <repositories>
+    <repository>
+      <id>artifactory-private-local</id>
+      <url>https://artifacts-prod-use1.pinadmin.com/artifactory/maven_private-jar-bazel-prod-local/</url>
+    </repository>
+  </repositories>
+
   <artifactId>spark-sql-columnar-shims-spark32</artifactId>
   <name>Gluten Shims for Spark 3.2</name>
   <packaging>jar</packaging>

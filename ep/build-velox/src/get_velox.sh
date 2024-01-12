@@ -228,7 +228,11 @@ VELOX_SOURCE_DIR="${VELOX_HOME}"
 
 # checkout code
 TARGET_BUILD_COMMIT="$(git ls-remote $VELOX_REPO $VELOX_BRANCH | awk '{print $1;}')"
-if [ -d $VELOX_SOURCE_DIR ]; then
+if [ "$IS_JENKINS_BUILD" = "true" ]; then
+  echo "Jenkins build. Using branch from Jenkins"
+  cd $VELOX_SOURCE_DIR
+  git init .
+elif [ -d $VELOX_SOURCE_DIR ]; then
   echo "Velox source folder $VELOX_SOURCE_DIR already exists..."
   cd $VELOX_SOURCE_DIR
   git init .

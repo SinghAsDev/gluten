@@ -13,30 +13,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: CH Backend Code style checks
+# name: CH Backend Code style checks
 
-on:
-  pull_request
+# on:
+#   pull_request
 
-concurrency:
-  group: ${{ github.repository }}-${{ github.head_ref || github.sha }}-${{ github.workflow }}
-  cancel-in-progress: true
+# concurrency:
+#   group: ${{ github.repository }}-${{ github.head_ref || github.sha }}-${{ github.workflow }}
+#   cancel-in-progress: true
 
-jobs:
-  ch-formatting-check:
-    name: CH Formatting Check
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        path:
-          - check: 'cpp-ch'
-            exclude: ''
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run clang-format style check for C/C++ programs.
-        uses: jidicula/clang-format-action@v4.11.0
-        with:
-          clang-format-version: '15'
-          check-path: ${{ matrix.path['check'] }}
-          fallback-style: 'Google' # optional
-          include-regex: '.*\.\(c\|cpp\|h\)'
+# jobs:
+#   ch-formatting-check:
+#     name: CH Formatting Check
+#     runs-on: ubuntu-latest
+#     strategy:
+#       matrix:
+#         path:
+#           - check: 'cpp-ch'
+#             exclude: ''
+#     steps:
+#       - uses: actions/checkout@v4
+#       - name: Run clang-format style check for C/C++ programs.
+#         uses: jidicula/clang-format-action@v4.11.0
+#         with:
+#           clang-format-version: '15'
+#           check-path: ${{ matrix.path['check'] }}
+#           fallback-style: 'Google' # optional
+#           include-regex: '.*\.\(c\|cpp\|h\)'

@@ -37,6 +37,13 @@
     <module>substrait/substrait-spark</module>
   </modules>
 
+  <repositories>
+    <repository>
+      <id>artifactory-thirdparty</id>
+      <url>https://artifacts-01-prod-use1.pinadmin.com/artifactory/maven_thirdparty-jar-bazel-prod-local</url>
+    </repository>
+  </repositories>
+
   <properties>
     <caffeine.version.java8>2.9.3</caffeine.version.java8>
     <delta.version>2.0.1</delta.version>
@@ -49,6 +56,7 @@
     <spark.shim.module>spark32</spark.shim.module>
     <spark.test.module>spark32</spark.test.module>
     <spark.version>3.2.0</spark.version>
+    <spark.version.pinterest>3.2.0-pinterest-36</spark.version.pinterest>
     <sparkshim.artifactId>spark-sql-columnar-shims-${spark.shim.module}</sparkshim.artifactId>
     <celeborn.version>0.3.0-incubating</celeborn.version>
     <arrow.version>14.0.1</arrow.version>
@@ -118,6 +126,7 @@
         <sparkbundle.version>3.2</sparkbundle.version>
         <sparkshim.artifactId>spark-sql-columnar-shims-spark32</sparkshim.artifactId>
         <spark.version>3.2.0</spark.version>
+        <spark.version.pinterest>3.2.0-pinterest-36</spark.version.pinterest>
         <delta.version>2.0.1</delta.version>
         <delta.binary.version>20</delta.binary.version>
       </properties>
@@ -255,7 +264,7 @@
       <dependency>
         <groupId>org.apache.spark</groupId>
         <artifactId>spark-sql_${scala.binary.version}</artifactId>
-        <version>${spark.version}</version>
+        <version>${spark.version.pinterest}</version>
         <scope>provided</scope>
         <exclusions>
           <exclusion>
@@ -291,7 +300,7 @@
       <dependency>
         <groupId>org.apache.spark</groupId>
         <artifactId>spark-hive_${scala.binary.version}</artifactId>
-        <version>${spark.version}</version>
+        <version>${spark.version.pinterest}</version>
         <scope>provided</scope>
         <exclusions>
           <exclusion>
@@ -303,7 +312,7 @@
       <dependency>
         <groupId>org.apache.spark</groupId>
         <artifactId>spark-catalyst_${scala.binary.version}</artifactId>
-        <version>${spark.version}</version>
+        <version>${spark.version.pinterest}</version>
         <exclusions>
           <exclusion>
             <groupId>org.apache.arrow</groupId>
@@ -319,7 +328,7 @@
       <dependency>
         <groupId>org.apache.spark</groupId>
         <artifactId>spark-core_${scala.binary.version}</artifactId>
-        <version>${spark.version}</version>
+        <version>${spark.version.pinterest}</version>
         <scope>provided</scope>
         <exclusions>
           <exclusion>
@@ -343,7 +352,7 @@
       <dependency>
         <groupId>org.apache.spark</groupId>
         <artifactId>spark-yarn_${scala.binary.version}</artifactId>
-        <version>${spark.version}</version>
+        <version>${spark.version.pinterest}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>

@@ -14,36 +14,36 @@
 # limitations under the License.
 
 
-name: Clickhouse Backend Trigger
+# name: Clickhouse Backend Trigger
 
-on:
-  pull_request_target:
-    paths:
-      - '.github/**'
-      - 'pom.xml'
-      - 'backends-clickhouse/**'
-      - 'gluten-celeborn/**'
-      - 'gluten-core/**'
-      - 'gluten-ut/**'
-      - 'shims/**'
-      - 'tools/gluten-it/**'
-      - 'tools/gluten-te/**'
-      - 'cpp-ch/**'
+# on:
+#   pull_request_target:
+#     paths:
+#       - '.github/**'
+#       - 'pom.xml'
+#       - 'backends-clickhouse/**'
+#       - 'gluten-celeborn/**'
+#       - 'gluten-core/**'
+#       - 'gluten-ut/**'
+#       - 'shims/**'
+#       - 'tools/gluten-it/**'
+#       - 'tools/gluten-te/**'
+#       - 'cpp-ch/**'
 
-jobs:
-  add-comment:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Sleep for Dev PR workflow done
-        run: |
-          sleep 15
+# jobs:
+#   add-comment:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+#       - name: Sleep for Dev PR workflow done
+#         run: |
+#           sleep 15
         
-      - name: Add comment to PR
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          COMMENT="Run Gluten Clickhouse CI"
-          URL=$(jq -r .pull_request.comments_url "$GITHUB_EVENT_PATH")
-          curl -H "Authorization: token ${GITHUB_TOKEN}" -X POST -d "{\"body\":\"$COMMENT\"}" "${URL}"
+#       - name: Add comment to PR
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#         run: |
+#           COMMENT="Run Gluten Clickhouse CI"
+#           URL=$(jq -r .pull_request.comments_url "$GITHUB_EVENT_PATH")
+#           curl -H "Authorization: token ${GITHUB_TOKEN}" -X POST -d "{\"body\":\"$COMMENT\"}" "${URL}"

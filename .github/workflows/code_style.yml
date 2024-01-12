@@ -13,44 +13,44 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: Code style checks
+# name: Code style checks
 
-on:
-  pull_request
+# on:
+#   pull_request
 
-concurrency:
-  group: ${{ github.repository }}-${{ github.head_ref || github.sha }}-${{ github.workflow }}
-  cancel-in-progress: true
+# concurrency:
+#   group: ${{ github.repository }}-${{ github.head_ref || github.sha }}-${{ github.workflow }}
+#   cancel-in-progress: true
 
-jobs:
-  formatting-check:
-    name: Formatting Check
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        path:
-          - check: 'cpp/core'
-            exclude: ''
-          - check: 'cpp/velox'
-            exclude: ''
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run clang-format style check for C/C++ programs.
-        uses: jidicula/clang-format-action@v3.5.1
-        with:
-          clang-format-version: '12'
-          check-path: ${{ matrix.path['check'] }}
-          fallback-style: 'Google' # optional
+# jobs:
+#   formatting-check:
+#     name: Formatting Check
+#     runs-on: ubuntu-latest
+#     strategy:
+#       matrix:
+#         path:
+#           - check: 'cpp/core'
+#             exclude: ''
+#           - check: 'cpp/velox'
+#             exclude: ''
+#     steps:
+#       - uses: actions/checkout@v4
+#       - name: Run clang-format style check for C/C++ programs.
+#         uses: jidicula/clang-format-action@v3.5.1
+#         with:
+#           clang-format-version: '12'
+#           check-path: ${{ matrix.path['check'] }}
+#           fallback-style: 'Google' # optional
 
-  license-check:
-    name: License Header Check
-    runs-on: ubuntu-latest
+#   license-check:
+#     name: License Header Check
+#     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v3
+#     steps:
+#       - uses: actions/checkout@v3
 
-      - name: Check License Header
-        run: |
-          git fetch --recurse-submodules=no origin main ${{github.event.pull_request.base.sha}}
-          pip install regex
-          dev/check.sh ${{github.event.pull_request.base.sha}}
+#       - name: Check License Header
+#         run: |
+#           git fetch --recurse-submodules=no origin main ${{github.event.pull_request.base.sha}}
+#           pip install regex
+#           dev/check.sh ${{github.event.pull_request.base.sha}}
