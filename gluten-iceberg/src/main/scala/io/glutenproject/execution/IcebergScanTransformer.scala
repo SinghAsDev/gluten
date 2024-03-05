@@ -20,6 +20,7 @@ import io.glutenproject.sql.shims.SparkShimLoader
 import io.glutenproject.substrait.rel.LocalFilesNode.ReadFileFormat
 import io.glutenproject.substrait.rel.SplitInfo
 
+import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.{AttributeReference, Expression}
 import org.apache.spark.sql.connector.catalog.Table
 import org.apache.spark.sql.connector.read.Scan
@@ -32,12 +33,17 @@ class IcebergScanTransformer(
     output: Seq[AttributeReference],
     @transient scan: Scan,
     runtimeFilters: Seq[Expression],
-    @transient table: Table)
+    @transient table: Table,
+    keyGroupedPartitioning: Option[Seq[Expression]] = None,
+    commonPartitionValues: Option[Seq[InternalRow]] = None)
   extends BatchScanExecTransformer(
     output = output,
     scan = scan,
     runtimeFilters = runtimeFilters,
-    table = table) {
+    table = table,
+    keyGroupedPartitioning = keyGroupedPartitioning,
+    commonPartitionValues = commonPartitionValues
+  ) {
 
   override def filterExprs(): Seq[Expression] = pushdownFilters
 
@@ -49,11 +55,12 @@ class IcebergScanTransformer(
 
   override lazy val fileFormat: ReadFileFormat = GlutenIcebergSourceUtil.getFileFormat(scan)
 
-  override def getSplitInfos: Seq[SplitInfo] = {
-    getPartitions.zipWithIndex.map {
-      case (p, index) => GlutenIcebergSourceUtil.genSplitInfo(p, index)
-    }
-  }
+  override def getSplitInfos: Seq[SplitInfo] = GlutenIcebergSourceUtil.getSplitInfos(
+    scan,
+    keyGroupedPartitioning,
+    filteredPartitions,
+    outputPartitioning,
+    getPartitions)
 }
 
 object IcebergScanTransformer {
@@ -64,6 +71,9 @@ object IcebergScanTransformer {
       batchScan.output,
       batchScan.scan,
       newPartitionFilters,
-      table = SparkShimLoader.getSparkShims.getBatchScanExecTable(batchScan))
+      table = SparkShimLoader.getSparkShims.getBatchScanExecTable(batchScan),
+      batchScan.keyGroupedPartitioning,
+      batchScan.commonPartitionValues
+    )
   }
 }

@@ -21,7 +21,10 @@ import io.glutenproject.substrait.rel.LocalFilesNode.ReadFileFormat
 
 import org.apache.spark.softaffinity.SoftAffinity
 import org.apache.spark.sql.catalyst.catalog.ExternalCatalogUtils
-import org.apache.spark.sql.connector.read.{InputPartition, Scan}
+import org.apache.spark.sql.catalyst.expressions.Expression
+import org.apache.spark.sql.catalyst.plans.physical.{KeyGroupedPartitioning, Partitioning}
+import org.apache.spark.sql.catalyst.util.InternalRowComparableWrapper
+import org.apache.spark.sql.connector.read.{HasPartitionKey, InputPartition, Scan}
 import org.apache.spark.sql.types.StructType
 
 import org.apache.iceberg.{CombinedScanTask, FileFormat, FileScanTask, ScanTask}
@@ -32,6 +35,42 @@ import java.util.{ArrayList => JArrayList, HashMap => JHashMap, Map => JMap}
 import scala.collection.JavaConverters._
 
 object GlutenIcebergSourceUtil {
+  def getSplitInfos(
+      scan: Scan,
+      keyGroupedPartitioning: Option[Seq[Expression]],
+      filteredPartitions: Seq[Seq[InputPartition]],
+      outputPartitioning: Partitioning,
+      partitions: Seq[InputPartition]): Seq[SplitInfo] = {
+    scan match {
+      case sparkBatchQueryScan: SparkBatchQueryScan if keyGroupedPartitioning.isDefined =>
+        var finalPartitions = filteredPartitions
+        outputPartitioning match {
+          case p: KeyGroupedPartitioning =>
+            val partitionMapping = finalPartitions
+              .map(
+                s =>
+                  InternalRowComparableWrapper(
+                    s.head.asInstanceOf[HasPartitionKey],
+                    p.expressions) -> s)
+              .toMap
+            finalPartitions = p.partitionValues.map {
+              partValue =>
+                // Use empty partition for those partition values that are not present
+                partitionMapping.getOrElse(
+                  InternalRowComparableWrapper(partValue, p.expressions),
+                  Seq.empty)
+            }
+          case _ =>
+        }
+        finalPartitions.flatten.zipWithIndex.map {
+          case (p, index) => GlutenIcebergSourceUtil.genSplitInfo(p, index)
+        }
+      case _ =>
+        partitions.zipWithIndex.map {
+          case (p, index) => GlutenIcebergSourceUtil.genSplitInfo(p, index)
+        }
+    }
+  }
 
   def genSplitInfo(inputPartition: InputPartition, index: Int): SplitInfo = inputPartition match {
     case partition: SparkInputPartition =>

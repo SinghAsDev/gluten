@@ -383,6 +383,13 @@ case class WholeStageTransformer(child: SparkPlan, materializeInput: Boolean = f
 
   private def getSplitInfosFromScanTransformer(
       basicScanExecTransformers: Seq[BasicScanExecTransformer]): Seq[Seq[SplitInfo]] = {
+    val allScanSplitInfos = basicScanExecTransformers.map(_.getSplitInfos)
+    if (allScanSplitInfos.length > 2) {
+      throw new GlutenException(
+        "Only up to two scan exec transforms are supported, but received " +
+          allScanSplitInfos.length + " transforms.")
+    }
+
     // If these are two scan transformers, they must have same partitions,
     // otherwise, exchange will be inserted. We should combine the two scan
     // transformers' partitions with same index, and set them together in
@@ -398,7 +405,6 @@ case class WholeStageTransformer(child: SparkPlan, materializeInput: Boolean = f
     //  p14  |  p24
     //      ...
     //  p1n  |  p2n    => substraitContext.setSplitInfo([p1n, p2n])
-    val allScanSplitInfos = basicScanExecTransformers.map(_.getSplitInfos)
     val partitionLength = allScanSplitInfos.head.size
     if (allScanSplitInfos.exists(_.size != partitionLength)) {
       throw new GlutenException(
